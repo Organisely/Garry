@@ -18,6 +18,9 @@ pub trait VcsAdapter: Send + Sync {
     /// Post a comment on a review
     async fn post_comment(&self, review_id: &ReviewId, message: &str) -> Result<()>;
     
+    /// Approve a review
+    async fn approve_review(&self, review_id: &ReviewId, message: Option<&str>) -> Result<()>;
+    
     /// List all pending reviews
     async fn list_pending_reviews(&self) -> Result<Vec<ReviewId>>;
     

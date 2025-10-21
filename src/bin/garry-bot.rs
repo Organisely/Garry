@@ -65,6 +65,13 @@ async fn main() -> Result<()> {
         check_interval.tick().await;
         
         let mut qm = queue_manager.lock().await;
+        
+        // Discover and queue approved PRs
+        if let Err(e) = qm.discover_and_queue_reviews().await {
+            error!("Error discovering reviews: {}", e);
+        }
+        
+        // Process the merge queue
         if let Err(e) = qm.process_queue().await {
             error!("Error processing queue: {}", e);
         }

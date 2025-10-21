@@ -72,4 +72,9 @@ impl GitRepository {
     pub fn push_branch(&self, branch: &str, remote: &str) -> Result<()> {
         RemoteOps::push_branch(&self.repo, branch, remote)
     }
+    
+    /// Force push branch to remote (for after squashing)
+    pub fn force_push_branch(&self, branch: &str, remote: &str) -> Result<()> {
+        RemoteOps::force_push_branch(&self.repo, branch, remote)
+    }
 }

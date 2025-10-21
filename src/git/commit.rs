@@ -82,9 +82,9 @@ impl CommitOps {
         let signature = repo.signature()
             .or_else(|_| Signature::now("Garry", "garry@organisely.com"))?;
         
-        // Create new commit on base
+        // Create new commit object without updating refs
         let new_commit_oid = repo.commit(
-            Some(&format!("refs/heads/{}", branch_name)),
+            None,
             &signature,
             &signature,
             &combined_message,
@@ -92,10 +92,17 @@ impl CommitOps {
             &[&base_commit],
         )?;
         
-        info!("Squashed commits into: {}", new_commit_oid);
+        info!("Created squashed commit: {}", new_commit_oid);
         
-        // Force checkout to update working directory
-        repo.checkout_head(Some(git2::build::CheckoutBuilder::default().force()))?;
+        // Update the branch reference
+        let branch_ref = format!("refs/heads/{}", branch_name);
+        repo.reference(&branch_ref, new_commit_oid, true, "squash commits")?;
+        
+        // Reset to the new commit
+        let new_commit = repo.find_commit(new_commit_oid)?;
+        repo.reset(new_commit.as_object(), git2::ResetType::Hard, None)?;
+        
+        info!("Successfully squashed {} commits", count);
         
         Ok(())
     }
