@@ -93,14 +93,14 @@ garry update
 
 ---
 
-### `garry merge`
+### `garry approve`
 
 ⚠️ **MAINTAINER/BOT ONLY** - This command should only be run by repository maintainers or the Garry Bot service.
 
 Initiate merge via the bot queue.
 
 ```bash
-garry merge
+garry approve
 ```
 
 **Behavior:**
@@ -124,8 +124,9 @@ garry merge
 **Example:**
 ```bash
 # Maintainers only
-garry merge
+garry approve
 ```
+Note: It is usually fine to do this when testing or when there aren't that many developers working on your project, but this may be required if you work in a huge team.
 
 ---
 
