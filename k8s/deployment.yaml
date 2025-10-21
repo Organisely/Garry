@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: garry-bot
+  labels:
+    app: garry-bot
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: garry-bot
+  template:
+    metadata:
+      labels:
+        app: garry-bot
+        version: v1
+    spec:
+      containers:
+      - name: garry-bot
+        image: organisely/garry-bot:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - name: webhook
+          containerPort: 8080
+          protocol: TCP
+        
+        env:
+        - name: RUST_LOG
+          value: "info"
+        - name: GARRY_VCS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: garry-secrets
+              key: vcs-token
+        - name: GARRY_VCS_PLATFORM
+          valueFrom:
+            configMapKeyRef:
+              name: garry-config
+              key: vcs-platform
+        - name: GARRY_VCS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: garry-config
+              key: vcs-host
+        - name: GARRY_VCS_REPOSITORY
+          valueFrom:
+            configMapKeyRef:
+              name: garry-config
+              key: vcs-repository
+        
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - garry-bot
+          initialDelaySeconds: 5
+          periodSeconds: 30
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        readinessProbe:
+          exec:
+            command:
+            - pgrep
+            - garry-bot
+          initialDelaySeconds: 3
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        volumeMounts:
+        - name: config
+          mountPath: /app/.garry
+          readOnly: true
+      
+      volumes:
+      - name: config
+        configMap:
+          name: garry-config-file
+      
+      restartPolicy: Always

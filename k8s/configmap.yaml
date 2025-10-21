@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: garry-config
+data:
+  vcs-platform: "github"
+  vcs-host: "github.com"
+  vcs-repository: "organisely/garry"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: garry-config-file
+data:
+  config.toml: |
+    [vcs]
+    platform = "github"
+    host = "github.com"
+    token = ""  # Will be overridden by secret
+    repository = "organisely/garry"
+
+    [bot]
+    webhook_port = 8080
+    queue_check_interval = 30
+    ci_timeout = 3600
+    main_branch = "main"
+
+    [git]
+    default_remote = "origin"
+    squash_base = "main"

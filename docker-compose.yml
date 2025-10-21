@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  garry-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: garry-bot
+    restart: unless-stopped
+    
+    # Environment variables (override in .env file)
+    environment:
+      - RUST_LOG=info
+      - GARRY_VCS_TOKEN=${GARRY_VCS_TOKEN}
+      - GARRY_VCS_PLATFORM=${GARRY_VCS_PLATFORM:-github}
+      - GARRY_VCS_HOST=${GARRY_VCS_HOST:-github.com}
+      - GARRY_VCS_REPOSITORY=${GARRY_VCS_REPOSITORY}
+    
+    # Mount config file
+    volumes:
+      - ./garry/config.toml:/app/.garry/config.toml:ro
+      - garry-logs:/app/logs
+    
+    # Expose webhook port
+    ports:
+      - "8080:8080"
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "pgrep", "garry-bot"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  garry-logs:
+    driver: local

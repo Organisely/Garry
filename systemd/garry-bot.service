@@ -1,0 +1,32 @@
+[Unit]
+Description=Garry Bot - Git Workflow Automation Service
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=garry
+Group=garry
+WorkingDirectory=/opt/garry
+ExecStart=/usr/local/bin/garry-bot
+Restart=always
+RestartSec=10
+
+# Environment
+Environment="RUST_LOG=info"
+EnvironmentFile=-/etc/garry/garry-bot.env
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/garry/logs
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=garry-bot
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,62 @@
+[package]
+name = "garry"
+version = "0.1.0"
+edition = "2021"
+authors = ["Organisely"]
+description = "A Rust-based Git workflow enforcement tool with VCS-agnostic automation"
+license = "MIT"
+
+[[bin]]
+name = "garry"
+path = "src/main.rs"
+
+[[bin]]
+name = "garry-bot"
+path = "src/bin/garry-bot.rs"
+
+[dependencies]
+# Git operations
+git2 = "0.18"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# HTTP client (using rustls instead of openssl for easier cross-platform builds)
+reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# CLI parsing
+clap = { version = "4", features = ["derive"] }
+
+# Error handling
+thiserror = "1"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Date/time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Async traits
+async-trait = "0.1"
+
+# TOML parsing
+toml = "0.8"
+
+# Directory utilities
+dirs = "5"
+
+[dev-dependencies]
+tempfile = "3"
+mockito = "1"
+tokio-test = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+target/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Config (will be mounted)
+.garry/config.toml
+
+# Specs
+.kiro/
+
+# Tests
+tests/

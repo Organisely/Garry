@@ -1,0 +1,40 @@
+# Garry Configuration Example for organisely/garry repository
+# Copy this file to .garry/config.toml and update with your actual values
+
+[vcs]
+# VCS platform: "github", "gitlab", "bitbucket", "gitea", or "self-hosted"
+platform = "github"
+
+# VCS host (use github.com for GitHub, or your custom domain for enterprise)
+host = "github.com"
+
+# GitHub Personal Access Token
+# Create at: https://github.com/settings/tokens
+# Required scopes: repo, workflow, admin:repo_hook
+# IMPORTANT: Replace with your actual token!
+token = "ghp_your_github_token_here_replace_this"
+
+# Repository in format "owner/repo"
+repository = "organisely/garry"
+
+[bot]
+# Port for webhook listener (if using webhooks in the future)
+webhook_port = 8080
+
+# How often to check the merge queue (in seconds)
+# 30 seconds is a good balance between responsiveness and API rate limits
+queue_check_interval = 30
+
+# Maximum time to wait for CI checks to complete (in seconds)
+# 3600 = 1 hour
+ci_timeout = 3600
+
+# Name of the main/protected branch
+main_branch = "main"
+
+[git]
+# Default remote name (usually "origin")
+default_remote = "origin"
+
+# Base branch for squashing commits (usually "main" or "origin/main")
+squash_base = "main"

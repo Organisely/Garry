@@ -1,0 +1,35 @@
+# Garry Configuration Example
+# Copy this file to .garry/config.toml and fill in your values
+
+[vcs]
+# VCS platform: "github", "gitlab", "bitbucket", "gitea", or "self-hosted"
+platform = "github"
+
+# VCS host (e.g., "github.com", "gitlab.com", or your custom domain)
+host = "github.com"
+
+# Authentication token (keep this secret!)
+token = "your-token-here"
+
+# Repository in format "owner/repo"
+repository = "organisely/your-repo"
+
+[bot]
+# Port for webhook listener
+webhook_port = 8080
+
+# How often to check the merge queue (in seconds)
+queue_check_interval = 30
+
+# Maximum time to wait for CI (in seconds)
+ci_timeout = 3600
+
+# Name of the main/protected branch
+main_branch = "main"
+
+[git]
+# Default remote name
+default_remote = "origin"
+
+# Base branch for squashing commits
+squash_base = "main"
