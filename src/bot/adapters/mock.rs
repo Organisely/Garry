@@ -59,6 +59,14 @@ impl VcsAdapter for MockVcsAdapter {
         Ok(())
     }
     
+    async fn approve_review(&self, review_id: &ReviewId, _message: Option<&str>) -> Result<()> {
+        let mut reviews = self.reviews.lock().unwrap();
+        if let Some(status) = reviews.get_mut(review_id) {
+            status.state = ReviewState::Approved;
+        }
+        Ok(())
+    }
+    
     async fn list_pending_reviews(&self) -> Result<Vec<ReviewId>> {
         let reviews = self.reviews.lock().unwrap();
         Ok(reviews.keys().cloned().collect())

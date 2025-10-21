@@ -18,3 +18,7 @@ Thumbs.db
 # Garry specific
 .garry/config.toml
 *.log
+
+# Binaries
+garry
+garry-bot

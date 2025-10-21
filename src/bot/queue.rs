@@ -43,6 +43,34 @@ impl QueueManager {
         }
     }
     
+    /// Discover approved reviews and add them to the queue
+    pub async fn discover_and_queue_reviews(&mut self) -> Result<()> {
+        // Get all pending reviews
+        let pending_reviews = self.adapter.list_pending_reviews().await?;
+        
+        for review_id in pending_reviews {
+            // Skip if already in queue
+            if self.queue.iter().any(|e| e.review_id == review_id) {
+                continue;
+            }
+            
+            // Check if approved and CI passed
+            match self.adapter.get_review_status(&review_id).await {
+                Ok(status) => {
+                    if status.state == ReviewState::Approved && status.ci_status == CiStatus::Success {
+                        info!("Found approved review {} with passing CI, adding to queue", review_id);
+                        let _ = self.add_to_queue(review_id).await;
+                    }
+                },
+                Err(e) => {
+                    warn!("Failed to get status for review {}: {}", review_id, e);
+                }
+            }
+        }
+        
+        Ok(())
+    }
+    
     /// Add a review to the merge queue
     pub async fn add_to_queue(&mut self, review_id: ReviewId) -> Result<()> {
         info!("Adding review {} to merge queue", review_id);

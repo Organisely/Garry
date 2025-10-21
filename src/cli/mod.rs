@@ -2,7 +2,7 @@ mod start;
 mod squash;
 mod upload;
 mod update;
-mod merge;
+mod approve;
 
 use clap::Subcommand;
 use crate::utils::error::Result;
@@ -27,8 +27,14 @@ pub enum Command {
     },
     /// Update an existing review with new changes
     Update,
-    /// Merge an approved review
-    Merge,
+    /// Approve a review (maintainers only)
+    Approve {
+        /// Review ID to approve
+        review_id: String,
+        /// Optional approval message
+        #[arg(short, long)]
+        message: Option<String>,
+    },
 }
 
 /// Execute a CLI command
@@ -38,6 +44,6 @@ pub async fn execute(command: Command) -> Result<()> {
         Command::Squash => squash::execute().await,
         Command::Upload { title, description } => upload::execute(title, description).await,
         Command::Update => update::execute().await,
-        Command::Merge => merge::execute().await,
+        Command::Approve { review_id, message } => approve::execute(review_id, message).await,
     }
 }

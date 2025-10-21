@@ -74,10 +74,21 @@ impl VcsAdapter for GithubAdapter {
             html_url: String,
         }
         
+        // For same-repo PRs, head should just be the branch name
+        // For cross-repo PRs, it should be "owner:branch"
+        let head = if branch.contains(':') {
+            branch.to_string()
+        } else {
+            // Extract owner from repository (format: "owner/repo")
+            let owner = self.repository.split('/').next()
+                .ok_or_else(|| GarryError::VcsError("Invalid repository format".to_string()))?;
+            format!("{}:{}", owner, branch)
+        };
+        
         let request = CreatePrRequest {
             title: title.to_string(),
             body: description.to_string(),
-            head: branch.to_string(),
+            head,
             base: "main".to_string(),
         };
         
@@ -218,6 +229,36 @@ impl VcsAdapter for GithubAdapter {
             .send()
             .await?;
         
+        Ok(())
+    }
+    
+    async fn approve_review(&self, review_id: &ReviewId, message: Option<&str>) -> Result<()> {
+        info!("Approving PR #{}", review_id);
+        
+        #[derive(Serialize)]
+        struct ReviewRequest {
+            body: String,
+            event: String,
+        }
+        
+        let request = ReviewRequest {
+            body: message.unwrap_or("Approved").to_string(),
+            event: "APPROVE".to_string(),
+        };
+        
+        let url = self.api_url(&format!("/repos/{}/pulls/{}/reviews", self.repository, review_id.as_str()));
+        let response = self.client
+            .post(&url)
+            .json(&request)
+            .send()
+            .await?;
+        
+        if !response.status().is_success() {
+            let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+            return Err(GarryError::VcsError(format!("Failed to approve review: {}", error_text)));
+        }
+        
+        info!("Successfully approved PR #{}", review_id);
         Ok(())
     }
     
